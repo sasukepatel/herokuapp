@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+   
+    <title>My Little Bloggie</title>
+   <% include ../partials/header.ejs %>
+</head>
+<body>
+     <% include ../partials/nav.ejs %>
+   
+    
+    
+    <div class="container" >
+        <div class="navbar">
+            <div class="navbar-inner">
+                <a class="brand" href="#">My Little Bloggie paggeee</a>
+                <ul class="nav">
+                    <li class="active"><a href="/posts">All Posts</a></li>
+                    <li><a href="/new">Create Post</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="span12">
+               <% posts.forEach(function(post) { %>
+                    <div>
+                        <h1><%= post.title %></h1>
+                        <p>
+                            <%= post.content %>
+                        </p>
+                    </div>
+                <% }) %>
+            </div>
+           
+        </div>
+    </div>
+</body>
+</html>
