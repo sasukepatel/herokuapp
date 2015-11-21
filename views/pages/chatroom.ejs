@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+      <% include ../partials/header.ejs %>
+    <title>Chat Room</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+       <% include ../partials/nav.ejs %>
+      <input type="text" placeholder="enter your nickname..." id="username" class="form-control"/>
+      <a type="button" class="btn btn-primary"  id="userbtn" >Set Nickname</a>
+      <hr/>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+
+<script>
+  var socket = io();
+  $('form').submit(function(){
+      var user = sessionStorage.getItem('username');
+      var message = user+': ' + $('#m').val()
+    socket.emit('chat message', message);
+    $('#m').val('');
+    return false;
+  });
+    
+    $('#m').on('focusin', function (event){
+        var user = sessionStorage.getItem('username');
+        socket.emit('typing', user);
+    });
+    
+    $('#m').on('focusout', function (event){
+       
+        socket.emit('donetyping');
+    });
+    
+    $('#userbtn').on("click",function (event){
+     sessionStorage.setItem('username', $('#username').val());
+  // console.log(user);
+    //  $('#initialmsg').hide();
+     // $('#welcome').html('sweeet!Lets Chat ' + user);
+     // $('#welcomecont').show();
+     // $('#welcomecont').fadeOut(1600);
+      //$('#username').val('');
+    //  $('#sendbtn').removeAttr('disabled');
+      
+  });
+     socket.on('chat message', function(msg){
+         
+    $('#messages').append($('<li>').text(msg));
+  });
+    
+    socket.on('typing', function(msg){
+         var str = "<p id='typing' style='color:white'> "+ msg +" is Typing..";  
+      $('#m').before(str); 
+    });
+    
+    socket.on('donetyping', function(msg){
+        
+      $('#typing').replaceWith(""); 
+    });
+</script>
+  </body>
+</html>

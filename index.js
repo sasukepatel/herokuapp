@@ -2,6 +2,8 @@ var express = require('express');
 var bodyParser= require('body-parser');
 var app = express();
 var cool = require('cool-ascii-faces');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var Post = require('./post');
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,6 +29,9 @@ app.get('/cool', function(request,response){
 
 app.get('/new', function(request,respose){
    respose.render('pages/new',{}); 
+});
+app.get('/chatroom', function(request,respose){
+   respose.render('pages/chatroom',{}); 
 });
 app.post('/create', function(request,response){
    // response.redirect('/posts');
@@ -59,7 +64,22 @@ app.get('/posts', function(request, response) {
         }
     });
 });
-app.listen(app.get('port'), function() {
+
+//Configure Socket IO
+io.on('connection', function(socket){
+  socket.on('chat message', function(msg){
+   io.emit('chat message', msg);
+  });
+    socket.on('typing', function(msg){
+       socket.broadcast.emit('typing',msg);
+    });
+    socket.on('donetyping', function(){
+       socket.broadcast.emit('donetyping');
+    });
+});
+
+//Configure port to listen on
+http.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
 
