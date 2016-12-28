@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 //configure connection URL
 
-mongoose.connect('mongodb://admin:rossi90338@ds055574.mongolab.com:55574/junkdata');
+mongoose.connect(process.env.DB_URL ||'mongodb://admin:rossi90338@ds055574.mongolab.com:55574/junkdata');
 
 var postSchema = mongoose.Schema({
         title:String,
